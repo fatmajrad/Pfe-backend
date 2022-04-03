@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 
@@ -124,11 +126,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
      */
     private $statutValidation = null;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Question::class, mappedBy="user")
+     */
+    private $questions;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Reponse::class, inversedBy="user")
+     */
+    private $reponse;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Reponse::class, mappedBy="Vote")
+     */
+    private $votes;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Reponse::class, mappedBy="user")
+     */
+    private $reponses;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Reponse::class, mappedBy="commentaire")
+     */
+    private $commentaires;
+
+ 
+
 
     public function __construct()
     {
         $this->demandedAt = new \DateTimeImmutable('now');
-    }
+        $this->questions = new ArrayCollection();
+        $this->votes = new ArrayCollection();
+        $this->reponses = new ArrayCollection();
+        $this->commentaires = new ArrayCollection();
+    }  
 
 
     public function getId(): ?int
@@ -293,5 +326,134 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
         $this->id=$id;
         return $this;
     }
+
+    /**
+     * @return Collection<int, Question>
+     */
+    public function getQuestions(): Collection
+    {
+        return $this->questions;
+    }
+
+    public function addQuestion(Question $question): self
+    {
+        if (!$this->questions->contains($question)) {
+            $this->questions[] = $question;
+            $question->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuestion(Question $question): self
+    {
+        if ($this->questions->removeElement($question)) {
+            // set the owning side to null (unless already changed)
+            if ($question->getUser() === $this) {
+                $question->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getReponse(): ?Reponse
+    {
+        return $this->reponse;
+    }
+
+    public function setReponse(?Reponse $reponse): self
+    {
+        $this->reponse = $reponse;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reponse>
+     */
+    public function getVotes(): Collection
+    {
+        return $this->votes;
+    }
+
+    public function addVote(Reponse $vote): self
+    {
+        if (!$this->votes->contains($vote)) {
+            $this->votes[] = $vote;
+            $vote->addVote($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVote(Reponse $vote): self
+    {
+        if ($this->votes->removeElement($vote)) {
+            $vote->removeVote($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reponse>
+     */
+    public function getReponses(): Collection
+    {
+        return $this->reponses;
+    }
+
+    public function addReponse(Reponse $reponse): self
+    {
+        if (!$this->reponses->contains($reponse)) {
+            $this->reponses[] = $reponse;
+            $reponse->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReponse(Reponse $reponse): self
+    {
+        if ($this->reponses->removeElement($reponse)) {
+            // set the owning side to null (unless already changed)
+            if ($reponse->getUser() === $this) {
+                $reponse->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reponse>
+     */
+    public function getCommentaires(): Collection
+    {
+        return $this->commentaires;
+    }
+
+    public function addCommentaire(Reponse $commentaire): self
+    {
+        if (!$this->commentaires->contains($commentaire)) {
+            $this->commentaires[] = $commentaire;
+            $commentaire->addCommentaire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentaire(Reponse $commentaire): self
+    {
+        if ($this->commentaires->removeElement($commentaire)) {
+            $commentaire->removeCommentaire($this);
+        }
+
+        return $this;
+    }
+
+ 
+
 
 }
