@@ -69,7 +69,7 @@ class Question
     public function __construct()
     {
         $this->tag = new ArrayCollection();
-        $this->user = new ArrayCollection();
+        $this->user = new User;
     }
 
 
@@ -162,5 +162,6 @@ class Question
         return $this;
     }
 
+    
 
 }

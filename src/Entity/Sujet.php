@@ -52,9 +52,12 @@ class Sujet
      */
     private $questions;
 
+   
+
     public function __construct()
     {
         $this->questions = new ArrayCollection();
+       
     }
 
 
@@ -127,5 +130,14 @@ class Sujet
         return $this;
     }
 
+    /**
+     * @return Collection<int, Connaissance>
+     */
+    public function getConnaissances(): Collection
+    {
+        return $this->connaissances;
+    }
+
+   
 
 }

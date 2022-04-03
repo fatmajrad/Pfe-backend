@@ -131,36 +131,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
      */
     private $questions;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Reponse::class, inversedBy="user")
-     */
-    private $reponse;
-
-    /**
-     * @ORM\ManyToMany(targetEntity=Reponse::class, mappedBy="Vote")
-     */
-    private $votes;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Reponse::class, mappedBy="user")
-     */
-    private $reponses;
-
-    /**
-     * @ORM\ManyToMany(targetEntity=Reponse::class, mappedBy="commentaire")
-     */
-    private $commentaires;
-
- 
-
+   
 
     public function __construct()
     {
         $this->demandedAt = new \DateTimeImmutable('now');
         $this->questions = new ArrayCollection();
-        $this->votes = new ArrayCollection();
-        $this->reponses = new ArrayCollection();
-        $this->commentaires = new ArrayCollection();
     }  
 
 
@@ -357,103 +333,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
         return $this;
     }
 
-    public function getReponse(): ?Reponse
-    {
-        return $this->reponse;
-    }
-
-    public function setReponse(?Reponse $reponse): self
-    {
-        $this->reponse = $reponse;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Reponse>
-     */
-    public function getVotes(): Collection
-    {
-        return $this->votes;
-    }
-
-    public function addVote(Reponse $vote): self
-    {
-        if (!$this->votes->contains($vote)) {
-            $this->votes[] = $vote;
-            $vote->addVote($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVote(Reponse $vote): self
-    {
-        if ($this->votes->removeElement($vote)) {
-            $vote->removeVote($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Reponse>
-     */
-    public function getReponses(): Collection
-    {
-        return $this->reponses;
-    }
-
-    public function addReponse(Reponse $reponse): self
-    {
-        if (!$this->reponses->contains($reponse)) {
-            $this->reponses[] = $reponse;
-            $reponse->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeReponse(Reponse $reponse): self
-    {
-        if ($this->reponses->removeElement($reponse)) {
-            // set the owning side to null (unless already changed)
-            if ($reponse->getUser() === $this) {
-                $reponse->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Reponse>
-     */
-    public function getCommentaires(): Collection
-    {
-        return $this->commentaires;
-    }
-
-    public function addCommentaire(Reponse $commentaire): self
-    {
-        if (!$this->commentaires->contains($commentaire)) {
-            $this->commentaires[] = $commentaire;
-            $commentaire->addCommentaire($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCommentaire(Reponse $commentaire): self
-    {
-        if ($this->commentaires->removeElement($commentaire)) {
-            $commentaire->removeCommentaire($this);
-        }
-
-        return $this;
-    }
-
- 
-
+  
+  
 
 }
