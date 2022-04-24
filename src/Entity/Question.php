@@ -9,21 +9,68 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Entity\User;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 /**
  * @ApiResource(
- *  normalizationContext={"groups"={"question:read"}},
- *     denormalizationContext={"groups"={"question:write"}},
+ *     normalizationContext={"groups"={"question:read"}},
+ *     denormalizationContext={"groups"={"question:write"}}, 
  *     collectionOperations={"get","post"},
- *     itemOperations={"put","delete","get"})
+ *     itemOperations={
+ *        "delete","PUT",
+ *        "get",
+ *        "decline_question"={
+ *          "method"="Put",
+ *          "path"="/questions/{id}/decline",
+ *          "controller"=App\Controller\DeclineQuestionController::class,
+ *          "openapi_context"={
+ *              "summary"="permet de valider une question",
+ *              "requestBody" = { 
+ *                       "content" ={
+ *                            "application/json"={
+ *                                "schema"={},
+ *                                "example"={}}}}}
+ *          
+ *        },
+ *       "validate_question"={
+ *          "method"="Put",
+ *          "path"="/questions/{id}/validate",
+ *          "controller"=App\Controller\ValidateQuestionController::class,
+ *          "openapi_context"={
+ *              "summary"="permet de refuser une question",
+ *              "requestBody" = {
+ *                       "content" ={
+ *                            "application/json"={
+ *                                "schema"={},
+ *                                "example"={}}}}}
+ *
+ *     },
+ *      "publish_question"={
+ *          "method"="Put",
+ *          "path"="/questions/{id}/publish",
+ *          "controller"=App\Controller\PublishQuestionController::class,
+ *          "openapi_context"={
+ *              "summary"="permet de refuser une question",
+ *              "requestBody" = {
+ *                       "content" ={
+ *                            "application/json"={
+ *                                "schema"={},
+ *                                "example"={}}}}}
+ *
+ *     }
+ * })
+ * @ApiFilter(BooleanFilter::class,properties={"statutValidation", "brouillon"})
+ * @ApiFilter(SearchFilter::class,properties={"user.id":"exact"})
  * @ORM\Entity(repositoryClass=QuestionRepository::class)
  */
 class Question
 {
     /**
-     * @ORM\Id
+     * @ORM\Id  
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"question:read", "question:write"})
+     * @Groups({"question:read","reponse:read"})
      * 
      */
     private $id;
@@ -43,33 +90,60 @@ class Question
 
     /**
      * @ORM\Column(type="blob", nullable=true)
-     * @Groups({"question:read", "question:write"})
+   
      */
     private $imageCode;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"question:read", "question:write"})
+   
      */
     private $fragmentCode;
 
     /**
      * @ORM\ManyToMany(targetEntity=Sujet::class, inversedBy="questions")
-     * @Groups({"question:read", "question:write"})
+     * @Groups({"question:read","question:write"})
      */
     private $tag;
 
     /**
      * @ORM\ManyToOne(targetEntity=user::class, inversedBy="questions")
-     * @Groups({"question:read", "question:write"})
+     * @Groups({"question:read","question:write"})
      */
     private $user;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Reponse::class, mappedBy="Question")
+     * @Groups({"question:read"})
+     */
+    private $reponses;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"question:read","question:write"})
+     */
+    private $brouillon;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"question:read","question:write"})
+     */
+    private $statutValidation;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Vote::class, mappedBy="Question")
+     *  @Groups({"question:read"})
+     */
+    private $votes;
+
+    
 
     public function __construct()
     {
         $this->tag = new ArrayCollection();
         $this->user = new User;
+        $this->reponses = new ArrayCollection();
+        $this->votes = new ArrayCollection();
     }
 
 
@@ -162,6 +236,89 @@ class Question
         return $this;
     }
 
+    /**
+     * @return Collection<int, Reponse>
+     */
+    public function getReponses(): Collection
+    {
+        return $this->reponses;
+    }
+
+    public function addReponse(Reponse $reponse): self
+    {
+        if (!$this->reponses->contains($reponse)) {
+            $this->reponses[] = $reponse;
+            $reponse->setQuestion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReponse(Reponse $reponse): self
+    {
+        if ($this->reponses->removeElement($reponse)) {
+            // set the owning side to null (unless already changed)
+            if ($reponse->getQuestion() === $this) {
+                $reponse->setQuestion(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getBrouillon(): ?bool
+    {
+        return $this->brouillon;
+    }
+
+    public function setBrouillon(?bool $brouillon): self
+    {
+        $this->brouillon = $brouillon;
+
+        return $this;
+    }
+
+    public function getStatutValidation(): ?bool
+    {
+        return $this->statutValidation;
+    }
+
+    public function setStatutValidation(?bool $statutValidation): self
+    {
+        $this->statutValidation = $statutValidation;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Vote>
+     */
+    public function getVotes(): Collection
+    {
+        return $this->votes;
+    }
+
+    public function addVote(Vote $vote): self
+    {
+        if (!$this->votes->contains($vote)) {
+            $this->votes[] = $vote;
+            $vote->setQuestion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVote(Vote $vote): self
+    {
+        if ($this->votes->removeElement($vote)) {
+            // set the owning side to null (unless already changed)
+            if ($vote->getQuestion() === $this) {
+                $vote->setQuestion(null);
+            }
+        }
+
+        return $this;
+    }
     
 
 }

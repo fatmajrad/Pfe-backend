@@ -20,7 +20,7 @@ class ValidateUserController extends AbstractController
     public  function __invoke(User $data,MailerInterface  $mailer):User
     {
         $data->setStatutValidation(true);
-        $data->setRoles(["EDITOR_ROLE"]);
+        $data->setRoles(["ROLE_EDITOR"]);
         $data->setValidatedAt(new \DateTimeImmutable('now'));
         $email = (new Email())
             ->from('sharevioo@gmail.com')

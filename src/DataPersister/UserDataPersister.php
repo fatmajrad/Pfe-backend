@@ -37,7 +37,7 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
      * @param User $data
      */
     public function persist($data, array $context = [])
-    {
+    {   dump($data);
         if ($data->getPassword()) {
             $data->setPassword(
                 $this->passwordHasher->hashPassword(
@@ -47,6 +47,7 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
             );
 
             $data->eraseCredentials();
+            dump($data);
         }
 
         $this->_entityManager->persist($data);

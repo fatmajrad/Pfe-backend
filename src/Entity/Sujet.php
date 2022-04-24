@@ -8,6 +8,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
+use ApiPlatform\Core\Api\FilterInterface;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @ApiResource(
@@ -17,20 +21,21 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     itemOperations={"put","delete","get"}
  * )
  * @ORM\Entity(repositoryClass=SujetRepository::class)
+ * @ApiFilter(SearchFilter::class,properties={"nom":"partial"})
  */
-class Sujet
+class Sujet 
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"sujet:read"})
+     * @Groups({"sujet:read","question:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"sujet:read", "sujet:write"})
+     * @Groups({"sujet:read", "sujet:write","question:read"})
      */
     private $nom;
 
@@ -42,7 +47,7 @@ class Sujet
 
     /**
      * @ORM\Column(type="blob", nullable=true)
-     * @Groups({"sujet:read", "sujet:write"})
+     * @Groups({"sujet:read"})
      */
     private $imageSujet;
 
@@ -52,11 +57,17 @@ class Sujet
      */
     private $questions;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Connaissance::class, mappedBy="sujet")
+     */
+    private $connaissances;
+
    
 
     public function __construct()
     {
         $this->questions = new ArrayCollection();
+        $this->connaissances = new ArrayCollection();
        
     }
 
@@ -136,6 +147,25 @@ class Sujet
     public function getConnaissances(): Collection
     {
         return $this->connaissances;
+    }
+
+    public function addConnaissance(Connaissance $connaissance): self
+    {
+        if (!$this->connaissances->contains($connaissance)) {
+            $this->connaissances[] = $connaissance;
+            $connaissance->addSujet($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConnaissance(Connaissance $connaissance): self
+    {
+        if ($this->connaissances->removeElement($connaissance)) {
+            $connaissance->removeSujet($this);
+        }
+
+        return $this;
     }
 
    

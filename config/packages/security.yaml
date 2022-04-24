@@ -9,14 +9,13 @@ security:
 
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        jwt:
-            lexik_jwt:
-                class: App\Entity\User
+        # used to reload user from session & other features (e.g. switch_user)
         app_user_provider:
             entity:
                 class: App\Entity\User
                 property: email
     firewalls:
+        
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
@@ -24,7 +23,6 @@ security:
         login:
             pattern: ^/api/login
             stateless: true
-            provider: app_user_provider
             json_login:
                 check_path: /api/login
                 success_handler: lexik_jwt_authentication.handler.authentication_success
@@ -32,14 +30,7 @@ security:
         api:
             pattern:   ^/api
             stateless: true
-            provider: jwt
             jwt: ~
-
-        api_token_refresh:
-            pattern: ^/api/token/refresh
-            stateless: true
-            provider: app_user_provider
-            refresh_jwt: ~
 
         #main:
         #    lazy: true
@@ -58,7 +49,6 @@ security:
     access_control:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api,       roles: PUBLIC_ACCESS }
-        - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
 
 when@test:
     security:

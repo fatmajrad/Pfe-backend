@@ -29,8 +29,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
  *              "method"="GET",
  *              "controller" = App\Controller\MeController::class
  *              }
- *      },
- *    
+ *     },
  *     itemOperations={
  *        "delete","PUT",
  *        "get"= {
@@ -71,7 +70,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"user:read"})
+     * @Groups({"user:read","question:read","reponse:read","commentaire:read","connaissance:read","question:write"})
      */
     private $id;
 
@@ -96,7 +95,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"user:read", "user:write"})
+     * @Groups({"user:read", "user:write","connaissance:read","question:read","reponse:read","commentaire:read"})
      */
     private $nomUser;
 
@@ -127,9 +126,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
     private $statutValidation = null;
 
     /**
-     * @ORM\OneToMany(targetEntity=Question::class, mappedBy="user")
+     * @ORM\OneToMany(targetEntity=Question::class, mappedBy="user", cascade={"persist","remove"})
      */
     private $questions;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Connaissance::class, mappedBy="user")
+     */
+    private $connaissances;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Reponse::class, mappedBy="user")
+     */
+    private $reponses;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Commentaire::class, mappedBy="user")
+     */
+    private $commentaires;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Vote::class, mappedBy="user", orphanRemoval=true)
+     */
+    private $Connaissance;
 
    
 
@@ -137,6 +156,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
     {
         $this->demandedAt = new \DateTimeImmutable('now');
         $this->questions = new ArrayCollection();
+        $this->connaissances = new ArrayCollection();
+        $this->reponses = new ArrayCollection();
+        $this->commentaires = new ArrayCollection();
+        $this->Connaissance = new ArrayCollection();
     }  
 
 
@@ -331,6 +354,104 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Connaissance>
+     */
+    public function getConnaissances(): Collection
+    {
+        return $this->connaissances;
+    }
+
+    public function addConnaissance(Connaissance $connaissance): self
+    {
+        if (!$this->connaissances->contains($connaissance)) {
+            $this->connaissances[] = $connaissance;
+            $connaissance->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConnaissance(Connaissance $connaissance): self
+    {
+        if ($this->connaissances->removeElement($connaissance)) {
+            // set the owning side to null (unless already changed)
+            if ($connaissance->getUser() === $this) {
+                $connaissance->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reponse>
+     */
+    public function getReponses(): Collection
+    {
+        return $this->reponses;
+    }
+
+    public function addReponse(Reponse $reponse): self
+    {
+        if (!$this->reponses->contains($reponse)) {
+            $this->reponses[] = $reponse;
+            $reponse->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReponse(Reponse $reponse): self
+    {
+        if ($this->reponses->removeElement($reponse)) {
+            // set the owning side to null (unless already changed)
+            if ($reponse->getUser() === $this) {
+                $reponse->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commentaire>
+     */
+    public function getCommentaires(): Collection
+    {
+        return $this->commentaires;
+    }
+
+    public function addCommentaire(Commentaire $commentaire): self
+    {
+        if (!$this->commentaires->contains($commentaire)) {
+            $this->commentaires[] = $commentaire;
+            $commentaire->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentaire(Commentaire $commentaire): self
+    {
+        if ($this->commentaires->removeElement($commentaire)) {
+            // set the owning side to null (unless already changed)
+            if ($commentaire->getUser() === $this) {
+                $commentaire->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Vote>
+     */
+    public function getConnaissance(): Collection
+    {
+        return $this->Connaissance;
     }
 
   
