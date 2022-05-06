@@ -73,4 +73,36 @@ class ConnaissanceRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function countAllConnaissances(string $statut): int
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT count(p)
+            FROM App\Entity\Connaissance p
+            WHERE p.statut = :statut'
+         
+        )->setParameter('statut', $statut);
+
+        // returns an array of Product objects
+        return $query->getSingleScalarResult();
+    }
+
+   
+
+    public function countIntervallConnaissances(string $statut,$minDate,$maxDate){
+        $entityManager = $this->getEntityManager();
+        
+        $query = $entityManager->createQuery(
+            'SELECT count(p) AS total , p.createdAt
+            FROM App\Entity\Connaissance p
+            WHERE p.statut = :statut
+            AND p.createdAt > :minDate 
+            AND p.createdAt < :maxDate
+            GROUP BY p.createdAt'
+         
+        )->setParameters(array('statut'=> $statut,'minDate'=>$minDate,'maxDate'=>$maxDate));
+        return $query->getResult();
+    }
 }

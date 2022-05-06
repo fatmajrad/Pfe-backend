@@ -12,7 +12,9 @@ use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -28,10 +30,18 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
  *              "path"="/me",
  *              "method"="GET",
  *              "controller" = App\Controller\MeController::class
- *              }
- *     },
+ *              },
+ *        "count"={
+ *           "path"="/users/{statut}/count",
+ *              "method"="GET",
+ *              "controller" = App\Controller\CountAllUsersController::class,
+ *       },"countIntervall"={
+ *           "path"="/users/{statut}/{minDate}/{maxDate}/countdate",
+ *              "method"="GET",
+ *              "controller" = App\Controller\CountIntervallUsersController::class,
+ *     }},
  *     itemOperations={
- *        "delete","PUT",
+ *        "delete","PUT","patch",
  *        "get"= {
  *           "controller" = App\Controller\NotFoundAction::class,
  *           "openapi_context" = {"summary" = "hidden"}
@@ -58,11 +68,12 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
  *              "requestBody" = {
  *                       "content" ={
  *                            "application/json"={
- *                                "schema"={},
+ *                                 "schema"={},
  *                                "example"={}}}}}
- *
- *     }
+ *          
+ *        },
  * })
+ * @ApiFilter(SearchFilter::class,properties={"id":"exact","statut":"exact","nomUser":"partial","email"="partial"})
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUserInterface
 {
@@ -70,13 +81,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"user:read","question:read","reponse:read","commentaire:read","connaissance:read","question:write"})
+     * @Groups({"user:read","question:read","reponse:read","commentaire:read","connaissance:read","question:write","connaissance:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups({"user:read", "user:write"})
+     * @Groups({"user:read", "user:write","connaissance:read"})
      */
     private $email;
 
@@ -108,22 +119,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
     private $userFonction;
 
     /**
-     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @ORM\Column(type="date", nullable=true)
      * @Groups({"user:read"})
      */
     private $validatedAt;
 
     /**
-     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @ORM\Column(type="date", nullable=true)
      * @Groups({"user:read"})
      */
     private $demandedAt;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     * @Groups({"user:read"})
-     */
-    private $statutValidation = null;
+   
 
     /**
      * @ORM\OneToMany(targetEntity=Question::class, mappedBy="user", cascade={"persist","remove"})
@@ -150,11 +157,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
      */
     private $Connaissance;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups({"user:read","user:write"})
+     */
+    private $remarque;
+
+/**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $statut;
    
 
     public function __construct()
     {
         $this->demandedAt = new \DateTimeImmutable('now');
+        $this->remarque=null;
         $this->questions = new ArrayCollection();
         $this->connaissances = new ArrayCollection();
         $this->reponses = new ArrayCollection();
@@ -301,18 +319,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
         return $this;
     }
 
-    public function getStatutValidation(): ?bool
-    {
-        return $this->statutValidation;
-    }
-
-    public function setStatutValidation(?bool $statutValidation): self
-    {
-        $this->statutValidation = $statutValidation;
-
-        return $this;
-    }
-
+    
 
     public static function createFromPayload($id, array $payload)
     {
@@ -454,7 +461,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
         return $this->Connaissance;
     }
 
-  
+    public function getRemarque(): ?string
+    {
+        return $this->remarque;
+    }
+
+    public function setRemarque(string $remarque): self
+    {
+        $this->remarque = $remarque;
+
+        return $this;
+    }
+
+    public function getStatut(): ?string
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(string $statut): self
+    {
+        $this->statut = $statut;
+
+        return $this;
+    }  
   
 
 }

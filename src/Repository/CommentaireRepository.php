@@ -73,4 +73,20 @@ class CommentaireRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findCommentByUser(int $user , int $connaissance, int $reponse): int
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT count(p)
+            FROM App\Entity\Commentaire p
+            WHERE p.user = :user and p.connaissance =:connaissance and p.reponse =:reponse'
+           
+        )->setParameters(array('user'=> $user, 'connaissance' => $connaissance, 'reponse' => $reponse));
+
+        // returns an array of Product objects
+        return $query->getSingleScalarResult();
+    }
+
 }

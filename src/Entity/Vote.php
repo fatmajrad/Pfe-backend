@@ -12,7 +12,15 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 /**
  *  @ApiResource(
  *     normalizationContext={"groups"={"vote:read"}},
- *     denormalizationContext={"groups"={"vote:write"}})
+ *     denormalizationContext={"groups"={"vote:write"}},
+ *     collectionOperations={
+ *       "get","post",
+ *       "count"={
+ *           "path"="/votes/{idUser}/{idConnaissance}/{idReponse}/{idQuestion}/{typeVote}/count",
+ *              "method"="GET",
+ *              "controller" = App\Controller\CountVoteController::class,
+ *       }
+ *     })
  * @ORM\Entity(repositoryClass=VoteRepository::class)
  * @ApiFilter(SearchFilter::class,properties={"user.id":"exact","Connaissance.id"="exact","Reponse.id"="exact","Question.id"="exact"})
  * 

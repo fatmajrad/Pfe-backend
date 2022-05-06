@@ -8,14 +8,27 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @ORM\Entity(repositoryClass=ConnaissanceRepository::class)
  * @ApiResource(
  *  normalizationContext={"groups"={"connaissance:read"}},
  *     denormalizationContext={"groups"={"connaissance:write"}},
- *     collectionOperations={"get","post"},
+ *     collectionOperations={"get","post",
+ *     "count"={
+ *           "path"="/connaissances/{statut}/count",
+ *              "method"="GET",
+ *              "controller" = App\Controller\CountAllConnaissancesController::class,
+ *      },"countIntervall"={
+ *           "path"="/connaissances/{statut}/{minDate}/{maxDate}/countdate",
+ *              "method"="GET",
+ *              "controller" = App\Controller\CountIntervallConnaissancesController::class,
+ *     }},
  *     itemOperations={"put","delete","get"})
+ * @ApiFilter(SearchFilter::class,properties={"user.id":"exact","statut":"exact","contenuConnaissance":"partial","sujet.id"="exact"})
  */
 class Connaissance
 {
@@ -33,12 +46,7 @@ class Connaissance
      */
     private $contenuConnaissance;
 
-    /**
-     * @ORM\Column(type="blob", nullable=true)
-     * @Groups({"connaissance:read", "connaissance:write"})
-     */
-    private $imageConnaissance;
-
+    
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="connaissances")
      * @ORM\JoinColumn(nullable=false)
@@ -48,12 +56,13 @@ class Connaissance
 
     /**
      * @ORM\ManyToMany(targetEntity=Sujet::class, inversedBy="connaissances")
+     * @Groups({"connaissance:read","connaissance:write"})
      */
     private $sujet;
 
     /**
      * @ORM\OneToMany(targetEntity=Commentaire::class, mappedBy="connaissance")
-     * @Groups({"connaissance:read","connaissance:write"})
+     * @Groups({"connaissance:read"})
      */
     private $commentaires;
 
@@ -63,6 +72,25 @@ class Connaissance
      */
     private $votes;
 
+
+    /**
+     * @ORM\Column(type="date")
+     * @Groups({"connaissance:read","connaissance:write"})
+     */
+    private $createdAt;
+
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     * @Groups({"connaissance:read","connaissance:write"})
+     */
+    private $updatedAt;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $statut;
+
+   
     public function __construct()
     {
         $this->sujet = new ArrayCollection();
@@ -87,18 +115,7 @@ class Connaissance
         return $this;
     }
 
-    public function getImageConnaissance()
-    {
-        return $this->imageConnaissance;
-    }
-
-    public function setImageConnaissance($imageConnaissance): self
-    {
-        $this->imageConnaissance = $imageConnaissance;
-
-        return $this;
-    }
-
+   
     public function getUser(): ?user
     {
         return $this->user;
@@ -194,4 +211,56 @@ class Connaissance
 
         return $this;
     }
+
+    public function getStatutValidation(): ?bool
+    {
+        return $this->statutValidation;
+    }
+
+    public function setStatutValidation(?bool $statutValidation): self
+    {
+        $this->statutValidation = $statutValidation;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getStatut(): ?string
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(string $statut): self
+    {
+        $this->statut = $statut;
+
+        return $this;
+    }
+
+   
+
+   
 }

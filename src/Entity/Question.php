@@ -16,7 +16,16 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  * @ApiResource(
  *     normalizationContext={"groups"={"question:read"}},
  *     denormalizationContext={"groups"={"question:write"}}, 
- *     collectionOperations={"get","post"},
+ *     collectionOperations={"get","post",
+ *     "count"={
+ *           "path"="/questions/{statut}/count",
+ *              "method"="GET",
+ *              "controller" = App\Controller\CountAllQuestionsController::class,
+ *     },"countIntervall"={
+ *           "path"="/questions/{statut}/{minDate}/{maxDate}/countdate",
+ *              "method"="GET",
+ *              "controller" = App\Controller\CountIntervallQuestionsController::class,
+ *     }},
  *     itemOperations={
  *        "delete","PUT",
  *        "get",
@@ -60,8 +69,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *
  *     }
  * })
- * @ApiFilter(BooleanFilter::class,properties={"statutValidation", "brouillon"})
- * @ApiFilter(SearchFilter::class,properties={"user.id":"exact"})
+ * 
+ * @ApiFilter(SearchFilter::class,properties={"user.id":"exact","statut":"exact","intituleQuestion":"partial","tag.id"="exact"})
  * @ORM\Entity(repositoryClass=QuestionRepository::class)
  */
 class Question
@@ -88,17 +97,7 @@ class Question
      */
     private $descriptionQuestion;
 
-    /**
-     * @ORM\Column(type="blob", nullable=true)
-   
-     */
-    private $imageCode;
-
-    /**
-     * @ORM\Column(type="text", nullable=true)
-   
-     */
-    private $fragmentCode;
+  
 
     /**
      * @ORM\ManyToMany(targetEntity=Sujet::class, inversedBy="questions")
@@ -119,24 +118,35 @@ class Question
     private $reponses;
 
     /**
-     * @ORM\Column(type="boolean", nullable=true)
-     * @Groups({"question:read","question:write"})
-     */
-    private $brouillon;
-
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     * @Groups({"question:read","question:write"})
-     */
-    private $statutValidation;
-
-    /**
      * @ORM\OneToMany(targetEntity=Vote::class, mappedBy="Question")
      *  @Groups({"question:read"})
      */
     private $votes;
 
-    
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @Groups({"question:read","question:write"})
+     */
+    private $createdAt;
+
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @Groups({"question:read","question:write"})
+     */
+    private $updatedAt;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"question:read","question:write"})
+     */
+    private $remarque;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups({"question:read","question:write"})
+     */
+    private $statut;
+
 
     public function __construct()
     {
@@ -176,29 +186,8 @@ class Question
         return $this;
     }
 
-    public function getImageCode()
-    {
-        return $this->imageCode;
-    }
-
-    public function setImageCode($imageCode): self
-    {
-        $this->imageCode = $imageCode;
-
-        return $this;
-    }
-
-    public function getFragmentCode(): ?string
-    {
-        return $this->fragmentCode;
-    }
-
-    public function setFragmentCode(?string $fragmentCode): self
-    {
-        $this->fragmentCode = $fragmentCode;
-
-        return $this;
-    }
+    
+    
 
     /**
      * @return Collection<int, sujet>
@@ -266,30 +255,7 @@ class Question
         return $this;
     }
 
-    public function getBrouillon(): ?bool
-    {
-        return $this->brouillon;
-    }
-
-    public function setBrouillon(?bool $brouillon): self
-    {
-        $this->brouillon = $brouillon;
-
-        return $this;
-    }
-
-    public function getStatutValidation(): ?bool
-    {
-        return $this->statutValidation;
-    }
-
-    public function setStatutValidation(?bool $statutValidation): self
-    {
-        $this->statutValidation = $statutValidation;
-
-        return $this;
-    }
-
+    
     /**
      * @return Collection<int, Vote>
      */
@@ -319,6 +285,57 @@ class Question
 
         return $this;
     }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getRemarque(): ?string
+    {
+        return $this->remarque;
+    }
+
+    public function setRemarque(?string $remarque): self
+    {
+        $this->remarque = $remarque;
+
+        return $this;
+    }
+
+    public function getStatut(): ?string
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(string $statut): self
+    {
+        $this->statut = $statut;
+
+        return $this;
+    }
+
     
+
+  
 
 }

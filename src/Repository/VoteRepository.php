@@ -7,6 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
+use phpDocumentor\Reflection\Types\Boolean;
 
 /**
  * @method Vote|null find($id, $lockMode = null, $lockVersion = null)
@@ -73,4 +74,23 @@ class VoteRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function countVoteParam(int $user , int $connaissance, int $reponse, int $question , bool $typeVote): int
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT count(p)
+            FROM App\Entity\Vote p
+            WHERE p.user = :user and 
+            p.connaissance =:connaissance and 
+            p.reponse =:reponse and 
+            p.question=:question and 
+            p.typeVote =:typeVote'
+           
+        )->setParameters(array('user'=> $user, 'connaissance' => $connaissance, 'reponse' => $reponse , 'question' => $question ,'typeVote' => $typeVote));
+
+        // returns an array of Product objects
+        return $query->getSingleScalarResult();
+    }
 }

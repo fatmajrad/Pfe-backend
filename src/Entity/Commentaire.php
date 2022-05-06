@@ -6,7 +6,9 @@ use App\Repository\CommentaireRepository;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Symfony\Component\Serializer\Annotation\Groups;
-
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 /**
  * @ORM\Entity(repositoryClass=CommentaireRepository::class)
  * @ApiResource(
@@ -15,11 +17,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     collectionOperations={
  *       "get","post",
  *       "count"={
- *           "path"="/count",
+ *           "path"="{idUser}/{idConnaissance}/{idReponse}/count",
  *              "method"="GET",
  *              "controller" = App\Controller\CountCommentsController::class,
  *       }
  *     })
+ * @ApiFilter(SearchFilter::class,properties={"user.id":"exact"})
  */
 class Commentaire
 {
@@ -33,13 +36,13 @@ class Commentaire
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"commentaire:write","commentaire:read","reponse:read","question:read"})
+     * @Groups({"commentaire:write","commentaire:read","reponse:read","question:read","connaissance:read"})
      */
     private $contenu;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="commentaires")
-     * @Groups({"commentaire:write","commentaire:read","reponse:read","question:read"})
+     * @Groups({"commentaire:write","commentaire:read","reponse:read","question:read","connaissance:read"})
      */
     private $user;
 

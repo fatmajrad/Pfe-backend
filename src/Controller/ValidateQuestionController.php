@@ -12,7 +12,7 @@ class ValidateQuestionController extends AbstractController
    
     public  function __invoke(Question $data):Question
     {
-        $data->setStatutValidation(true);
+        $data->setStatut("valide");
         return $data;
     }
 }

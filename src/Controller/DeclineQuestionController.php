@@ -11,7 +11,7 @@ class DeclineQuestionController extends AbstractController
 {
     public  function __invoke(Question $data):Question
     {
-        $data->setStatutValidation(false);
+        $data->setStatut("invalide");
         return $data;
     }
 }

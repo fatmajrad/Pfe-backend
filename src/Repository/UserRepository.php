@@ -90,4 +90,36 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ;
     }
     */
+
+    public function countAllUsers(string $statut): int
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT count(p)
+            FROM App\Entity\User p
+            WHERE p.statut = :statut'
+         
+        )->setParameter('statut', $statut);
+
+        // returns an array of Product objects
+        return $query->getSingleScalarResult();
+    }
+
+   
+
+    public function countIntervallUsers(string $statut,$minDate,$maxDate){
+        $entityManager = $this->getEntityManager();
+        
+        $query = $entityManager->createQuery(
+            'SELECT count(p) AS total , p.demandedAt
+            FROM App\Entity\User p
+            WHERE p.statut = :statut
+            AND p.demandedAt >= :minDate 
+            AND p.demandedAt <= :maxDate 
+            GROUP BY p.demandedAt'
+         
+        )->setParameters(array('statut'=> $statut,'minDate'=>$minDate,'maxDate'=>$maxDate));
+        return $query->getResult();
+    } 
 }
