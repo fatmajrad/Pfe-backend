@@ -109,17 +109,24 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
    
 
     public function countIntervallUsers(string $statut,$minDate,$maxDate){
-        $entityManager = $this->getEntityManager();
-        
-        $query = $entityManager->createQuery(
-            'SELECT count(p) AS total , p.demandedAt
-            FROM App\Entity\User p
-            WHERE p.statut = :statut
-            AND p.demandedAt >= :minDate 
-            AND p.demandedAt <= :maxDate 
-            GROUP BY p.demandedAt'
-         
-        )->setParameters(array('statut'=> $statut,'minDate'=>$minDate,'maxDate'=>$maxDate));
-        return $query->getResult();
+        $tab=[];
+        for ($i=$minDate; $i <=$maxDate ; $i++) { 
+            $x=["total" =>$this->getDateTotal($i,$statut)[0]["total"]] ;
+            $x+=["createdAt"=>$i];
+            array_push($tab, $x);
+        }
+        return $tab;
     } 
+
+    public function getDateTotal($createdAt,$statut){
+        $entityManager = $this->getEntityManager();
+        $query = $entityManager->createQuery(
+            'SELECT count(p) AS total
+            FROM App\Entity\User p
+            WHERE p.createdAt = :createdAt
+            AND p.statut = :statut'
+        )->setParameters(array('createdAt'=> $createdAt, 'statut'=>$statut));
+      
+        return $query->getResult();
+    }
 }

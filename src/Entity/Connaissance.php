@@ -22,7 +22,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *           "path"="/connaissances/{statut}/count",
  *              "method"="GET",
  *              "controller" = App\Controller\CountAllConnaissancesController::class,
- *      },"countIntervall"={
+ *      },
+ *      "countIntervall"={
  *           "path"="/connaissances/{statut}/{minDate}/{maxDate}/countdate",
  *              "method"="GET",
  *              "controller" = App\Controller\CountIntervallConnaissancesController::class,
@@ -73,29 +74,32 @@ class Connaissance
     private $votes;
 
 
+    
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups({"connaissance:read","connaissance:write"})
+     */
+    private $statut;
+
     /**
      * @ORM\Column(type="date")
      * @Groups({"connaissance:read","connaissance:write"})
      */
     private $createdAt;
 
-    /**
-     * @ORM\Column(type="date", nullable=true)
+/**
+     * @ORM\Column(type="date")
      * @Groups({"connaissance:read","connaissance:write"})
      */
     private $updatedAt;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $statut;
-
    
     public function __construct()
-    {
+    {   $this->createdAt = new \DateTime();
         $this->sujet = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
         $this->votes = new ArrayCollection();
+        $this->statut="onHold";
     }
 
     public function getId(): ?int
@@ -212,14 +216,16 @@ class Connaissance
         return $this;
     }
 
-    public function getStatutValidation(): ?bool
+   
+
+    public function getStatut(): ?string
     {
-        return $this->statutValidation;
+        return $this->statut;
     }
 
-    public function setStatutValidation(?bool $statutValidation): self
+    public function setStatut(string $statut): self
     {
-        $this->statutValidation = $statutValidation;
+        $this->statut = $statut;
 
         return $this;
     }
@@ -241,26 +247,12 @@ class Connaissance
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
         return $this;
-    }
-
-    public function getStatut(): ?string
-    {
-        return $this->statut;
-    }
-
-    public function setStatut(string $statut): self
-    {
-        $this->statut = $statut;
-
-        return $this;
-    }
-
-   
+    }   
 
    
 }

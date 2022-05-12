@@ -93,4 +93,18 @@ class VoteRepository extends ServiceEntityRepository
         // returns an array of Product objects
         return $query->getSingleScalarResult();
     }
+
+    public function getRatedQuestions(){
+        
+        $id=1;
+        $entityManager = $this->getEntityManager();
+        $query = $entityManager->createQuery(
+        'SELECT v 
+         FROM App\Entity\Vote v
+         INNER JOIN v.question q
+         where v.id = :id '
+         )->setParameter('id', $id);
+   
+         return $query->getResult();
+    }
 }

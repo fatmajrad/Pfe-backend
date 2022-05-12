@@ -81,7 +81,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"user:read","question:read","reponse:read","commentaire:read","connaissance:read","question:write","connaissance:read"})
+     * @Groups({"user:read","question:read","reponse:read","commentaire:read","connaissance:read"})
      */
     private $id;
 
@@ -118,19 +118,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
      */
     private $userFonction;
 
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     * @Groups({"user:read"})
-     */
-    private $validatedAt;
-
-    /**
-     * @ORM\Column(type="date", nullable=true)
-     * @Groups({"user:read"})
-     */
-    private $demandedAt;
-
-   
 
     /**
      * @ORM\OneToMany(targetEntity=Question::class, mappedBy="user", cascade={"persist","remove"})
@@ -158,21 +145,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
     private $Connaissance;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"user:read","user:write"})
      */
     private $remarque;
 
 /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"user:read"})
      */
     private $statut;
+
+    /**
+     * @ORM\Column(type="date")
+     * @Groups({"user:read"})
+     */
+    private $createdAt;
+
+    /**
+     * @ORM\Column(type="date",nullable=true)
+     * @Groups({"user:read"})
+     */
+    private $validatedAt;
    
 
     public function __construct()
     {
-        $this->demandedAt = new \DateTimeImmutable('now');
-        $this->remarque=null;
+        $this->createdAt = new \DateTime();
+        $this->statut="onHold";
         $this->questions = new ArrayCollection();
         $this->connaissances = new ArrayCollection();
         $this->reponses = new ArrayCollection();
@@ -295,32 +295,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
         return $this;
     }
 
-    public function getValidatedAt(): ?\DateTimeImmutable
-    {
-        return $this->validatedAt;
-    }
-
-    public function setValidatedAt(?\DateTimeImmutable $validatedAt): self
-    {
-        $this->validatedAt = $validatedAt;
-
-        return $this;
-    }
-
-    public function getDemandedAt(): ?\DateTimeImmutable
-    {
-        return $this->demandedAt;
-    }
-
-    public function setDemandedAt(?\DateTimeImmutable $demandedAt): self
-    {
-        $this->demandedAt = $demandedAt;
-
-        return $this;
-    }
-
-    
-
+   
     public static function createFromPayload($id, array $payload)
     {
        
@@ -481,6 +456,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
     public function setStatut(string $statut): self
     {
         $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getValidatedAt(): ?\DateTimeInterface
+    {
+        return $this->validatedAt;
+    }
+
+    public function setValidatedAt(\DateTimeInterface $validatedAt): self
+    {
+        $this->validatedAt = $validatedAt;
 
         return $this;
     }  

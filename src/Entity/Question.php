@@ -2,16 +2,19 @@
 
 namespace App\Entity;
 
-use App\Repository\QuestionRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiResource;
-use Symfony\Component\Serializer\Annotation\Groups;
 use App\Entity\User;
+use Doctrine\ORM\Mapping as ORM;
+use App\Repository\QuestionRepository;
 use ApiPlatform\Core\Annotation\ApiFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints\DateTime;
+use Symfony\Component\Validator\Constraints as Assert;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 /**
  * @ApiResource(
  *     normalizationContext={"groups"={"question:read"}},
@@ -25,7 +28,19 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *           "path"="/questions/{statut}/{minDate}/{maxDate}/countdate",
  *              "method"="GET",
  *              "controller" = App\Controller\CountIntervallQuestionsController::class,
- *     }},
+ *     },"RecentQuestions"={
+ *           "path"="/questions/recent",
+ *              "method"="GET",
+ *              "controller" = App\Controller\RecentQuestionsController::class,
+ *     },"countIntervall"={
+ *           "path"="/questions/{statut}/{minDate}/{maxDate}/countdate",
+ *              "method"="GET",
+ *              "controller" = App\Controller\CountIntervallQuestionsController::class,
+ *      },"rated"={
+ *           "path"="/questions/rated",
+ *              "method"="GET",
+ *              "controller" = App\Controller\BestQuestionsController::class,}
+ *      },
  *     itemOperations={
  *        "delete","PUT",
  *        "get",
@@ -123,17 +138,7 @@ class Question
      */
     private $votes;
 
-    /**
-     * @ORM\Column(type="datetime_immutable", nullable=true)
-     * @Groups({"question:read","question:write"})
-     */
-    private $createdAt;
-
-    /**
-     * @ORM\Column(type="datetime_immutable", nullable=true)
-     * @Groups({"question:read","question:write"})
-     */
-    private $updatedAt;
+   
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -147,10 +152,24 @@ class Question
      */
     private $statut;
 
+    /**
+     * @Groups({"question:read","question:write"})
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $createdAt;
+
+    /**
+     * @Groups({"question:read","question:write"})
+     * @ORM\Column(type="date",nullable=true)
+     */
+    private $updatedAt;
+
 
     public function __construct()
-    {
+    {   
+        $this->createdAt = new \DateTime();
         $this->tag = new ArrayCollection();
+        $this->statut="onHold";
         $this->user = new User;
         $this->reponses = new ArrayCollection();
         $this->votes = new ArrayCollection();
@@ -286,30 +305,7 @@ class Question
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
+   
     public function getRemarque(): ?string
     {
         return $this->remarque;
@@ -330,6 +326,30 @@ class Question
     public function setStatut(string $statut): self
     {
         $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

@@ -11,7 +11,7 @@ class PublishQuestionController extends AbstractController
 {
     public  function __invoke(Question $data):Question
     {
-        $data->setBrouillon(false);
+        $data->setStatut("onHold");
         return $data;
     }
 }

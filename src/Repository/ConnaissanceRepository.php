@@ -92,17 +92,24 @@ class ConnaissanceRepository extends ServiceEntityRepository
    
 
     public function countIntervallConnaissances(string $statut,$minDate,$maxDate){
+        $tab=[];
+        for ($i=$minDate; $i <=$maxDate ; $i++) { 
+            $x=["total" =>$this->getDateTotal($i,$statut)[0]["total"]] ;
+            $x+=["createdAt"=>$i];
+            array_push($tab, $x);
+        }
+        return $tab;
+    }
+
+    public function getDateTotal($createdAt,$statut){
         $entityManager = $this->getEntityManager();
-        
         $query = $entityManager->createQuery(
-            'SELECT count(p) AS total , p.createdAt
+            'SELECT count(p) AS total
             FROM App\Entity\Connaissance p
-            WHERE p.statut = :statut
-            AND p.createdAt > :minDate 
-            AND p.createdAt < :maxDate
-            GROUP BY p.createdAt'
-         
-        )->setParameters(array('statut'=> $statut,'minDate'=>$minDate,'maxDate'=>$maxDate));
+            WHERE p.createdAt = :createdAt
+            AND p.statut = :statut'
+        )->setParameters(array('createdAt'=> $createdAt, 'statut'=>$statut));
+      
         return $query->getResult();
     }
 }

@@ -31,7 +31,7 @@ class Vote
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"vote:read","vote:write","reponse:read","question:read","connaissance:read"})
+     * @Groups({"vote:read","vote:write"})
      */
     private $id;
 
@@ -44,7 +44,7 @@ class Vote
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="Connaissance")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"vote:read","vote:write","reponse:read","question:read","connaissance:read"})
+     * @Groups({"vote:read","vote:write"})
      */
     private $user;
 
@@ -68,7 +68,7 @@ class Vote
 
     /**
      * @ORM\Column(type="boolean")
-     *  * @Groups({"vote:read","vote:write","reponse:read","question:read","connaissance:read"})
+     *  * @Groups({"vote:read","vote:write"})
      */
     private $typeVote;
 

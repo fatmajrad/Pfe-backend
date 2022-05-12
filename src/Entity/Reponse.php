@@ -57,8 +57,21 @@ class Reponse
      */
     private $votes;
 
+    /**
+     * @ORM\Column(type="date")
+     * @Groups({"reponse:read","reponse:write"})
+     * 
+     */
+    private $createdAt;
+
+    /**
+     * @ORM\Column(type="date",nullable=true)
+     * @Groups({"reponse:read","reponse:write"})
+     */
+    private $updatedAt;
+
     public function __construct()
-    {
+    {   $this->createdAt = new \DateTime();
         $this->commentaires = new ArrayCollection();
         $this->votes = new ArrayCollection();
     }
@@ -160,6 +173,30 @@ class Reponse
                 $vote->setReponse(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
