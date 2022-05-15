@@ -60,13 +60,13 @@ class Commentaire
 
     /**
      * @ORM\Column(type="date")
-     * @Groups({"commentaire:write","commentaire:read"})
+     * @Groups({"commentaire:write","commentaire:read","question:read","connaissance:read"})
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="date",nullable=true)
-     * @Groups({"commentaire:write","commentaire:read"})
+     * @Groups({"commentaire:write","commentaire:read","question:read","connaissance:read"})
      */
     private $updatedAt;
 

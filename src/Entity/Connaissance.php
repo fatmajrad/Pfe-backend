@@ -89,7 +89,7 @@ class Connaissance
     private $createdAt;
 
 /**
-     * @ORM\Column(type="date")
+     * @ORM\Column(type="date",nullable=true)
      * @Groups({"connaissance:read","connaissance:write"})
      */
     private $updatedAt;

@@ -35,11 +35,17 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *           "path"="/users/{statut}/count",
  *              "method"="GET",
  *              "controller" = App\Controller\CountAllUsersController::class,
- *       },"countIntervall"={
+ *       },
+ *       "countIntervall"={
  *           "path"="/users/{statut}/{minDate}/{maxDate}/countdate",
  *              "method"="GET",
  *              "controller" = App\Controller\CountIntervallUsersController::class,
- *     }},
+ *     },"getAllUsers"={
+ *           "path"="users/allUsers",
+ *              "method"="GET",
+ *              "controller" = App\Controller\GetAllUsersController::class,
+ *      }
+ *     },
  *     itemOperations={
  *        "delete","PUT","patch",
  *        "get"= {

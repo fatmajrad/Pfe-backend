@@ -59,14 +59,14 @@ class Reponse
 
     /**
      * @ORM\Column(type="date")
-     * @Groups({"reponse:read","reponse:write"})
+     * @Groups({"reponse:read","reponse:write","question:read"})
      * 
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="date",nullable=true)
-     * @Groups({"reponse:read","reponse:write"})
+     * @Groups({"reponse:read","reponse:write","question:read"})
      */
     private $updatedAt;
 

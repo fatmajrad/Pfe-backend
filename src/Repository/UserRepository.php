@@ -129,4 +129,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       
         return $query->getResult();
     }
+
+    public function getAllUsers(){
+        $entityManager = $this->getEntityManager();
+        $nomUser="admin";
+        $query = $entityManager->createQuery(
+            'SELECT p
+            FROM App\Entity\User p
+            WHERE p.nomUser <> :nomUser'
+        )->setParameters(array('nomUser'=> $nomUser));
+      
+        return $query->getResult();
+    }
 }
