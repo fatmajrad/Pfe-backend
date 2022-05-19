@@ -70,6 +70,12 @@ class Reponse
      */
     private $updatedAt;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"reponse:read","reponse:write","question:read"})
+     */
+    private $statut;
+
     public function __construct()
     {   $this->createdAt = new \DateTime();
         $this->commentaires = new ArrayCollection();
@@ -197,6 +203,18 @@ class Reponse
     public function setUpdatedAt(\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getStatut(): ?bool
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(?bool $statut): self
+    {
+        $this->statut = $statut;
 
         return $this;
     }

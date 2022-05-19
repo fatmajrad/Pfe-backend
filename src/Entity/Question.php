@@ -17,8 +17,9 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 /**
  * @ApiResource(
- *     normalizationContext={"groups"={"question:read"}},
- *     denormalizationContext={"groups"={"question:write"}}, 
+ *     
+ *     normalizationContext={"groups"={"question:read"},"enable_max_depth"=true},
+ *     denormalizationContext={"groups"={"question:write"},"enable_max_depth"=true}, 
  *     collectionOperations={"get","post",
  *     "count"={
  *           "path"="/questions/{statut}/count",

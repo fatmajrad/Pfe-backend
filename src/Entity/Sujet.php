@@ -35,7 +35,7 @@ class Sujet
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"sujet:read", "sujet:write","question:read"})
+     * @Groups({"sujet:read", "sujet:write","question:read","user:read","connaissance:read"})
      */
     private $nom;
 
@@ -62,12 +62,18 @@ class Sujet
      */
     private $connaissances;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=User::class, mappedBy="intrestedTopics")
+     */
+    private $users;
+
    
 
     public function __construct()
     {
         $this->questions = new ArrayCollection();
         $this->connaissances = new ArrayCollection();
+        $this->users = new ArrayCollection();
        
     }
 
@@ -163,6 +169,33 @@ class Sujet
     {
         if ($this->connaissances->removeElement($connaissance)) {
             $connaissance->removeSujet($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->addIntrestedTopic($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->removeElement($user)) {
+            $user->removeIntrestedTopic($this);
         }
 
         return $this;

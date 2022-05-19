@@ -173,6 +173,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
      * @Groups({"user:read"})
      */
     private $validatedAt;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     * @Groups({"user:read","user:write"})
+     */
+    private $description;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Sujet::class, inversedBy="users")
+     * @Groups({"user:read","user:write"})
+     */
+    private $intrestedTopics;
    
 
     public function __construct()
@@ -184,6 +196,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
         $this->reponses = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
         $this->Connaissance = new ArrayCollection();
+        $this->intrestedTopics = new ArrayCollection();
     }  
 
 
@@ -486,6 +499,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
     public function setValidatedAt(\DateTimeInterface $validatedAt): self
     {
         $this->validatedAt = $validatedAt;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, sujet>
+     */
+    public function getIntrestedTopics(): Collection
+    {
+        return $this->intrestedTopics;
+    }
+
+    public function addIntrestedTopic(sujet $intrestedTopic): self
+    {
+        if (!$this->intrestedTopics->contains($intrestedTopic)) {
+            $this->intrestedTopics[] = $intrestedTopic;
+        }
+
+        return $this;
+    }
+
+    public function removeIntrestedTopic(sujet $intrestedTopic): self
+    {
+        $this->intrestedTopics->removeElement($intrestedTopic);
 
         return $this;
     }  
