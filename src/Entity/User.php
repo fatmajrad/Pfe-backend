@@ -127,16 +127,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
 
     /**
      * @ORM\OneToMany(targetEntity=Question::class, mappedBy="user", cascade={"persist","remove"})
+     * @Groups({"user:read"})
      */
     private $questions;
 
     /**
      * @ORM\OneToMany(targetEntity=Connaissance::class, mappedBy="user")
+     * @Groups({"user:read"})
      */
     private $connaissances;
 
     /**
      * @ORM\OneToMany(targetEntity=Reponse::class, mappedBy="user")
+     * @Groups({"user:read"})
      */
     private $reponses;
 
