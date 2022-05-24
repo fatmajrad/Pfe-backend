@@ -96,15 +96,26 @@ class VoteRepository extends ServiceEntityRepository
 
     public function getRatedQuestions(){
         
-        $id=1;
-        $entityManager = $this->getEntityManager();
-        $query = $entityManager->createQuery(
-        'SELECT v 
-         FROM App\Entity\Vote v
-         INNER JOIN v.question q
-         where v.id = :id '
-         )->setParameter('id', $id);
-   
-         return $query->getResult();
-    }
+        $qb = $this->createQueryBuilder('s');
+        $qb->select("s as vote");
+        $qb->join('s.Question', 'v');
+        $qb->orderBy('COUNT(v.id)', "DESC");
+        $qb->groupBy('s.id');
+        $query = $qb->getQuery();
+        $result = $query->getResult();
+
+    return $result;
+}
+    public function getRatedConnaissances(){   
+
+    $qb = $this->createQueryBuilder('s');
+    $qb->select("s");
+    $qb->join('s.Connaissance', 'v');
+    $qb->orderBy('COUNT(v.id)', "DESC");
+    $qb->groupBy('s.id');
+    $query = $qb->getQuery();
+    $result = $query->getResult();
+
+    return $result;
+}
 }

@@ -15,11 +15,15 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *     denormalizationContext={"groups"={"vote:write"}},
  *     collectionOperations={
  *       "get","post",
- *       "count"={
- *           "path"="/votes/{idUser}/{idConnaissance}/{idReponse}/{idQuestion}/{typeVote}/count",
+ *       "ratedConnaissances"={
+ *           "path"="votes/rated_connaissances",
  *              "method"="GET",
- *              "controller" = App\Controller\CountVoteController::class,
- *       }
+ *              "controller" = App\Controller\RatedConnaissancesController::class,
+ *       },"ratedReponses"={
+ *           "path"="votes/rated_reponses",
+ *              "method"="GET",
+ *              "controller" = App\Controller\RatedReponsesController::class,
+ *      }
  *     })
  * @ORM\Entity(repositoryClass=VoteRepository::class)
  * @ApiFilter(SearchFilter::class,properties={"user.id":"exact","Connaissance.id"="exact","Reponse.id"="exact","Question.id"="exact"})

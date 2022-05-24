@@ -112,4 +112,27 @@ class ConnaissanceRepository extends ServiceEntityRepository
       
         return $query->getResult();
     }
+
+    public function getRatedConnaissances(){   
+
+        $qb = $this->createQueryBuilder('s');
+        $qb->select("s");
+        $qb->join('s.votes', 'v');
+        $qb->orderBy('COUNT(v.id)', "DESC");
+        $query = $qb->getQuery();
+        $result = $query->getResult();
+    
+        return $result;
+    }
+
+    public function getRecentConnaissances(){
+       
+        $entityManager = $this->getEntityManager();
+        $query = $entityManager->createQuery(
+            'SELECT p 
+             FROM App\Entity\Connaissance p
+             ORDER BY p.createdAt DESC'
+        );
+        return $query->getResult();
+      }
 }

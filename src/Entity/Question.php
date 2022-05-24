@@ -40,7 +40,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
  *      },"rated"={
  *           "path"="/questions/rated",
  *              "method"="GET",
- *              "controller" = App\Controller\BestQuestionsController::class,}
+ *              "controller" = App\Controller\RatedQuestionsController::class,}
  *      },
  *     itemOperations={
  *        "delete","PUT",
@@ -95,7 +95,7 @@ class Question
      * @ORM\Id  
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"question:read","reponse:read"})
+     * @Groups({"question:read","reponse:read","vote:read"})
      * 
      */
     private $id;

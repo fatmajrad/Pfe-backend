@@ -40,7 +40,7 @@ class Reponse
 
     /**
      * @ORM\ManyToOne(targetEntity=Question::class, inversedBy="reponses")
-     * @Groups({"reponse:read","reponse:write"})
+     * @Groups({"reponse:read","reponse:write","vote:read"})
      * 
      */
     private $Question;

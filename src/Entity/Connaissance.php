@@ -23,11 +23,16 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *              "method"="GET",
  *              "controller" = App\Controller\CountAllConnaissancesController::class,
  *      },
- *      "countIntervall"={
+ *      "recent"={
+ *           "path"="/connaissances/recent",
+ *              "method"="GET",
+ *              "controller" = App\Controller\RecentConnaissancesController::class,
+ *     },"countIntervall"={
  *           "path"="/connaissances/{statut}/{minDate}/{maxDate}/countdate",
  *              "method"="GET",
  *              "controller" = App\Controller\CountIntervallConnaissancesController::class,
- *     }},
+ *     }
+ * },
  *     itemOperations={"put","delete","get"})
  * @ApiFilter(SearchFilter::class,properties={"user.id":"exact","statut":"exact","contenuConnaissance":"partial","sujet.id"="exact"})
  */
@@ -37,7 +42,7 @@ class Connaissance
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"connaissance:read","commentaire:read"})
+     * @Groups({"connaissance:read","commentaire:read","vote:read"})
      */
     private $id;
 
