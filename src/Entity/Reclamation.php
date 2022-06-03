@@ -10,10 +10,16 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * 
  * @ApiResource(
- *     normalizationContext={"groups"={"recalamtion:read"}},
- *     denormalizationContext={"groups"={"reclamtion:write"}},
+ *     normalizationContext={"groups"={"reclamation:read"}},
+ *     denormalizationContext={"groups"={"reclamation:write"}},
  *     collectionOperations={"get","post"},
- *     itemOperations={"put","delete","get"}
+ *     itemOperations={"put","delete","get",
+ *     "answerREclamtion"={
+ *          "method"="Put",
+ *          "path"="/reclamations/{id}/answer",
+ *          "controller"=App\Controller\RespondToReclamationController::class,
+ *
+ *     }}
  * )
  * @ORM\Entity(repositoryClass=ReclamationRepository::class)
  * 
@@ -24,49 +30,49 @@ class Reclamation
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"recalamtion:read","recalamtion:read"})
+     * @Groups({"reclamation:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"recalamtion:read","recalamtion:read"})
+     * @Groups({"reclamation:read","reclamation:write"})
      */
     private $userName;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"recalamtion:read","recalamtion:read"})
+     * @Groups({"reclamation:read","reclamation:write"})
      */
     private $UserEmail;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"recalamtion:read","recalamtion:read"})
+     * @Groups({"reclamation:read","reclamation:write"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Groups({"recalamtion:read","recalamtion:read"})
+     * @Groups({"reclamation:read","reclamation:write"})
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Groups({"recalamtion:read","recalamtion:read"})
+     * @Groups({"reclamation:read","reclamation:write"})
      */
     private $answredAt;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"recalamtion:read","recalamtion:read"})
+     * @Groups({"reclamation:read","reclamation:write"})
      */
     private $statut;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"recalamtion:read","recalamtion:read"})
+     * @Groups({"reclamation:read","reclamation:write"})
      */
     private $answer;
 

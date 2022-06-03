@@ -65,6 +65,11 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *                                "example"={}}}}}
  *          
  *        },
+ *       "verif_adrees_mail"={
+ *          "method"="Put",
+ *          "path"="/users/{id}/verifEmail",
+ *          "controller"=App\Controller\VerifemailAdressController::class
+ *        },
  *       "decline_user"={
  *          "method"="Put",
  *          "path"="/users/{id}/decline",
@@ -77,7 +82,12 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *                                 "schema"={},
  *                                "example"={}}}}}
  *          
- *        },
+ *       }, "reset_password"={
+ *          "method"="Put",
+ *          "path"="/users/{id}/reset_password",
+ *          "controller"=App\Controller\ResetPasswprdController::class
+ *       }
+ *         
  * })
  * @ApiFilter(SearchFilter::class,properties={"id":"exact","statut":"exact","nomUser":"partial","email"="partial"})
  */

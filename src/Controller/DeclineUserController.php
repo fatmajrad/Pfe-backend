@@ -3,23 +3,30 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Mime\Email;
+use App\Repository\UserRepository;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class DeclineUserController extends AbstractController
 {
+    private $userRepository;
+    
+    public function __construct(UserRepository $userRepository){
+        $this->userRepository = $userRepository;
+       }
+    
     public  function __invoke(User $data,MailerInterface  $mailer):User
     {  
-        $data->setStatut("invalide");
-        $data->setValidatedAt(new \DateTime('now'));
-        $email = (new Email())
+       $email = (new Email())
         ->from('sharevioo@gmail.com')
         ->to($data->getEmail())
-        ->subject(' viewry')
-        ->text($data->getRemarque());
+        ->subject('Inscription à viewry')
+        ->text("Votre demande d'inscription à Viewry a été refusé.Pour la raison suivante:",$data->getRemarque());
         $mailer->send($email);
-        return $data;
+        $statut ="invalide";
+        return $this->userRepository->declineUser($data->getId(),$statut);
+        
         
     }
 }

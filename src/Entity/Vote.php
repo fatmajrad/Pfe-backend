@@ -24,7 +24,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *              "method"="GET",
  *              "controller" = App\Controller\RatedReponsesController::class,
  *      }
- *     })
+ *     },itemOperations={"delete","PUT", "get"})
  * @ORM\Entity(repositoryClass=VoteRepository::class)
  * @ApiFilter(SearchFilter::class,properties={"user.id":"exact","Connaissance.id"="exact","Reponse.id"="exact","Question.id"="exact"})
  * 

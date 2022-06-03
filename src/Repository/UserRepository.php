@@ -141,4 +141,58 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
       
         return $query->getResult();
     }
-}
+
+    public function findUserByEmail($email){
+        $entityManager = $this->getEntityManager();
+       
+        $query = $entityManager->createQuery(
+           'SELECT p
+            FROM App\Entity\User p
+            WHERE p.email = :email'
+        )->setParameters(array('nomUser'=> $email));
+      
+        return $query->getResult();
+    }
+
+    public function updateUserPassword($password,$id){
+        $entityManager = $this->getEntityManager();
+        $queryBuilder = $entityManager->createQueryBuilder();
+        $query = $queryBuilder->update('App\Entity\User', 'u')
+                ->set('u.password', ':password')
+                ->where('u.id = :id')
+                ->setParameter('password', $password)
+                ->setParameter('id', $id)
+                ->getQuery();
+        
+        return $query->getResult();
+    }   
+
+    public function validateUser($id,$statut,$role){
+        $entityManager = $this->getEntityManager();
+        $queryBuilder = $entityManager->createQueryBuilder();
+        $query = $queryBuilder->update('App\Entity\User', 'u')
+                ->set('u.statut', ':statut')
+                ->set('u.roles', ':role')
+                ->where('u.id = :id')
+                ->setParameter('id', $id)
+                ->setParameter('statut', $statut)
+                ->setParameter('role', $role)
+                ->getQuery();
+        
+        return $query->getResult();
+    }
+
+    public function declineUser ($id,$statut){
+        $entityManager = $this->getEntityManager();
+        $queryBuilder = $entityManager->createQueryBuilder();
+        $query = $queryBuilder->update('App\Entity\User', 'u')
+                ->set('u.statut', ':statut')
+                ->where('u.id = :id')
+                ->setParameter('id', $id)
+                ->setParameter('statut', $statut)
+                ->getQuery();
+    
+        return $query->getResult();
+    }
+
+    }
